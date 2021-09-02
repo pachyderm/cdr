@@ -1,5 +1,8 @@
 
-.PHONE: proto
+.PHONY: proto run_minio test
+
+test:
+	go test -v ./...
 
 proto:
 	./build_protobuf.sh
