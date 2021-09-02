@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\030github.com/pachyderm/cdr',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tcdr.proto\x12\rpachyderm.cdr\"\xbe\x02\n\x03Ref\x12#\n\x04http\x18\x01 \x01(\x0b\x32\x13.pachyderm.cdr.HTTPH\x00\x12\x32\n\x0c\x63ontent_hash\x18  \x01(\x0b\x32\x1a.pachyderm.cdr.ContentHashH\x00\x12\x30\n\x0bsize_limits\x18! \x01(\x0b\x32\x19.pachyderm.cdr.SizeLimitsH\x00\x12\'\n\x06\x63ipher\x18@ \x01(\x0b\x32\x15.pachyderm.cdr.CipherH\x00\x12+\n\x08\x63ompress\x18\x41 \x01(\x0b\x32\x17.pachyderm.cdr.CompressH\x00\x12%\n\x05slice\x18\x42 \x01(\x0b\x32\x14.pachyderm.cdr.SliceH\x00\x12\'\n\x06\x63oncat\x18` \x01(\x0b\x32\x15.pachyderm.cdr.ConcatH\x00\x42\x06\n\x04\x62ody\"v\n\x04HTTP\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x31\n\x07headers\x18\x02 \x03(\x0b\x32 .pachyderm.cdr.HTTP.HeadersEntry\x1a.\n\x0cHeadersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"e\n\x0b\x43ontentHash\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12%\n\x04\x61lgo\x18\x02 \x01(\x0e\x32\x17.pachyderm.cdr.HashAlgo\x12\x0c\n\x04hash\x18\x03 \x01(\x0c\"I\n\nSizeLimits\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12\x0b\n\x03min\x18\x02 \x01(\x03\x12\x0b\n\x03max\x18\x03 \x01(\x03\"m\n\x06\x43ipher\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12$\n\x04\x61lgo\x18\x02 \x01(\x0e\x32\x16.pachyderm.cdr.EncAlgo\x12\x0b\n\x03key\x18\x03 \x01(\x0c\x12\r\n\x05nonce\x18\x04 \x01(\x0c\"X\n\x08\x43ompress\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12)\n\x04\x61lgo\x18\x02 \x01(\x0e\x32\x1b.pachyderm.cdr.CompressAlgo\"F\n\x05Slice\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12\r\n\x05start\x18\x02 \x01(\x04\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x04\"*\n\x06\x43oncat\x12 \n\x04refs\x18\x01 \x03(\x0b\x32\x12.pachyderm.cdr.Ref*/\n\x08HashAlgo\x12\x10\n\x0cUNKNOWN_HASH\x10\x00\x12\x11\n\x0b\x42LAKE2b_256\x10\xa0\xe4\x02*+\n\x07\x45ncAlgo\x12\x12\n\x0eUNKNOWN_CIPHER\x10\x00\x12\x0c\n\x08\x43HACHA20\x10\x01*.\n\x0c\x43ompressAlgo\x12\x14\n\x10UNKNOWN_COMPRESS\x10\x00\x12\x08\n\x04GZIP\x10\x01\x42\x1aZ\x18github.com/pachyderm/cdrb\x06proto3'
+  serialized_pb=b'\n\tcdr.proto\x12\rpachyderm.cdr\"\xbe\x02\n\x03Ref\x12#\n\x04http\x18\x01 \x01(\x0b\x32\x13.pachyderm.cdr.HTTPH\x00\x12\x32\n\x0c\x63ontent_hash\x18  \x01(\x0b\x32\x1a.pachyderm.cdr.ContentHashH\x00\x12\x30\n\x0bsize_limits\x18! \x01(\x0b\x32\x19.pachyderm.cdr.SizeLimitsH\x00\x12\'\n\x06\x63ipher\x18@ \x01(\x0b\x32\x15.pachyderm.cdr.CipherH\x00\x12+\n\x08\x63ompress\x18\x41 \x01(\x0b\x32\x17.pachyderm.cdr.CompressH\x00\x12%\n\x05slice\x18\x42 \x01(\x0b\x32\x14.pachyderm.cdr.SliceH\x00\x12\'\n\x06\x63oncat\x18` \x01(\x0b\x32\x15.pachyderm.cdr.ConcatH\x00\x42\x06\n\x04\x62ody\"v\n\x04HTTP\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x31\n\x07headers\x18\x02 \x03(\x0b\x32 .pachyderm.cdr.HTTP.HeadersEntry\x1a.\n\x0cHeadersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"e\n\x0b\x43ontentHash\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12%\n\x04\x61lgo\x18\x02 \x01(\x0e\x32\x17.pachyderm.cdr.HashAlgo\x12\x0c\n\x04hash\x18\x03 \x01(\x0c\"I\n\nSizeLimits\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12\x0b\n\x03min\x18\x02 \x01(\x03\x12\x0b\n\x03max\x18\x03 \x01(\x03\"p\n\x06\x43ipher\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12\'\n\x04\x61lgo\x18\x02 \x01(\x0e\x32\x19.pachyderm.cdr.CipherAlgo\x12\x0b\n\x03key\x18\x03 \x01(\x0c\x12\r\n\x05nonce\x18\x04 \x01(\x0c\"X\n\x08\x43ompress\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12)\n\x04\x61lgo\x18\x02 \x01(\x0e\x32\x1b.pachyderm.cdr.CompressAlgo\"F\n\x05Slice\x12!\n\x05inner\x18\x01 \x01(\x0b\x32\x12.pachyderm.cdr.Ref\x12\r\n\x05start\x18\x02 \x01(\x04\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x04\"*\n\x06\x43oncat\x12 \n\x04refs\x18\x01 \x03(\x0b\x32\x12.pachyderm.cdr.Ref*/\n\x08HashAlgo\x12\x10\n\x0cUNKNOWN_HASH\x10\x00\x12\x11\n\x0b\x42LAKE2b_256\x10\xa0\xe4\x02*.\n\nCipherAlgo\x12\x12\n\x0eUNKNOWN_CIPHER\x10\x00\x12\x0c\n\x08\x43HACHA20\x10\x01*.\n\x0c\x43ompressAlgo\x12\x14\n\x10UNKNOWN_COMPRESS\x10\x00\x12\x08\n\x04GZIP\x10\x01\x42\x1aZ\x18github.com/pachyderm/cdrb\x06proto3'
 )
 
 _HASHALGO = _descriptor.EnumDescriptor(
@@ -43,15 +43,15 @@ _HASHALGO = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=964,
-  serialized_end=1011,
+  serialized_start=967,
+  serialized_end=1014,
 )
 _sym_db.RegisterEnumDescriptor(_HASHALGO)
 
 HashAlgo = enum_type_wrapper.EnumTypeWrapper(_HASHALGO)
-_ENCALGO = _descriptor.EnumDescriptor(
-  name='EncAlgo',
-  full_name='pachyderm.cdr.EncAlgo',
+_CIPHERALGO = _descriptor.EnumDescriptor(
+  name='CipherAlgo',
+  full_name='pachyderm.cdr.CipherAlgo',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -69,12 +69,12 @@ _ENCALGO = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1013,
-  serialized_end=1056,
+  serialized_start=1016,
+  serialized_end=1062,
 )
-_sym_db.RegisterEnumDescriptor(_ENCALGO)
+_sym_db.RegisterEnumDescriptor(_CIPHERALGO)
 
-EncAlgo = enum_type_wrapper.EnumTypeWrapper(_ENCALGO)
+CipherAlgo = enum_type_wrapper.EnumTypeWrapper(_CIPHERALGO)
 _COMPRESSALGO = _descriptor.EnumDescriptor(
   name='CompressAlgo',
   full_name='pachyderm.cdr.CompressAlgo',
@@ -95,8 +95,8 @@ _COMPRESSALGO = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1058,
-  serialized_end=1104,
+  serialized_start=1064,
+  serialized_end=1110,
 )
 _sym_db.RegisterEnumDescriptor(_COMPRESSALGO)
 
@@ -407,7 +407,7 @@ _CIPHER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=647,
-  serialized_end=756,
+  serialized_end=759,
 )
 
 
@@ -445,8 +445,8 @@ _COMPRESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=758,
-  serialized_end=846,
+  serialized_start=761,
+  serialized_end=849,
 )
 
 
@@ -491,8 +491,8 @@ _SLICE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=848,
-  serialized_end=918,
+  serialized_start=851,
+  serialized_end=921,
 )
 
 
@@ -523,8 +523,8 @@ _CONCAT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=920,
-  serialized_end=962,
+  serialized_start=923,
+  serialized_end=965,
 )
 
 _REF.fields_by_name['http'].message_type = _HTTP
@@ -561,7 +561,7 @@ _CONTENTHASH.fields_by_name['inner'].message_type = _REF
 _CONTENTHASH.fields_by_name['algo'].enum_type = _HASHALGO
 _SIZELIMITS.fields_by_name['inner'].message_type = _REF
 _CIPHER.fields_by_name['inner'].message_type = _REF
-_CIPHER.fields_by_name['algo'].enum_type = _ENCALGO
+_CIPHER.fields_by_name['algo'].enum_type = _CIPHERALGO
 _COMPRESS.fields_by_name['inner'].message_type = _REF
 _COMPRESS.fields_by_name['algo'].enum_type = _COMPRESSALGO
 _SLICE.fields_by_name['inner'].message_type = _REF
@@ -575,7 +575,7 @@ DESCRIPTOR.message_types_by_name['Compress'] = _COMPRESS
 DESCRIPTOR.message_types_by_name['Slice'] = _SLICE
 DESCRIPTOR.message_types_by_name['Concat'] = _CONCAT
 DESCRIPTOR.enum_types_by_name['HashAlgo'] = _HASHALGO
-DESCRIPTOR.enum_types_by_name['EncAlgo'] = _ENCALGO
+DESCRIPTOR.enum_types_by_name['CipherAlgo'] = _CIPHERALGO
 DESCRIPTOR.enum_types_by_name['CompressAlgo'] = _COMPRESSALGO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

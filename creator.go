@@ -103,7 +103,7 @@ func EncryptChaCha20(key []byte) func(out, in []byte) ([]byte, RefMapper) {
 			return &Ref{
 				Body: &Ref_Cipher{Cipher: &Cipher{
 					Inner: x,
-					Algo:  EncAlgo_CHACHA20,
+					Algo:  CipherAlgo_CHACHA20,
 					Key:   key,
 					Nonce: nonce,
 				}},

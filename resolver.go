@@ -28,13 +28,12 @@ func (r *Resolver) Deref(ctx context.Context, ref *Ref) (io.ReadCloser, error) {
 	switch x := ref.Body.(type) {
 	case *Ref_Http:
 		return r.derefHTTP(ctx, x.Http)
-	case *Ref_Cipher:
-		return r.derefCipher(ctx, x.Cipher)
 	case *Ref_ContentHash:
 		return r.derefContentHash(ctx, x.ContentHash)
+	case *Ref_Cipher:
+		return r.derefCipher(ctx, x.Cipher)
 	case *Ref_Compress:
 		return r.derefCompress(ctx, x.Compress)
-
 	default:
 		return nil, errors.Errorf("unsupported Ref variant %v: %T", ref.Body, ref.Body)
 	}
@@ -90,7 +89,7 @@ func (r *Resolver) derefCipher(ctx context.Context, ref *Cipher) (io.ReadCloser,
 	}
 	var rd io.Reader
 	switch ref.Algo {
-	case EncAlgo_CHACHA20:
+	case CipherAlgo_CHACHA20:
 		ciph, err := chacha20.NewUnauthenticatedCipher(ref.Key, ref.Nonce)
 		if err != nil {
 			return nil, err

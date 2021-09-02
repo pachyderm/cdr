@@ -51,13 +51,13 @@ message SizeLimits {
 // 1:1 Transforms
 message Cipher {
     Ref inner = 1;
-    EncAlgo algo = 2;
+    CipherAlgo algo = 2;
 
     bytes key = 3;
     bytes nonce = 4;
 }
 
-enum EncAlgo {
+enum CipherAlgo {
     UNKNOWN_CIPHER = 0;
     CHACHA20 = 1;
 }
