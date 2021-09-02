@@ -1,0 +1,72 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+!.env.test
+
+# Coverage
+*.out
+coverage.txt
+cover.html
+coverage.html
+frontend/coverage/clover.xml
+
+# Vim temporary swap files while editing
+.*.swp
+
+# go run binary
+hub
+!javascript/apps/hub
+gin-bin
+
+# Ignore environment variable files
+*.env
+
+# Ignore root json files, as they may be GCP credentials files
+/*.json
+
+# Ignore sqlite databases
+*.sqlite3
+
+# Ignore secrets
+etc/secrets
+
+# Ignore default directory housing automatically generated configs
+etc/configs/*.yaml
+
+# VSCode workspace settings
+.vscode
+
+# Directory for staging mgrt config
+/staging
+
+# Don't check in the files created by create-dev-project
+gcp_project/
+
+# Ignore Node Modules
+node_modules/
+
+# language server logs
+.log/
+
+# Local Netlify folder
+.netlify
+
+# OS X
+.DS_Store
+
+# Jetbrains workspace settings
+.idea
+
+# Python files
+.venv
+__pycache__
+dist
+eggs
+*.egg-info
+wheels
