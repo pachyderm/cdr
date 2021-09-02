@@ -5,9 +5,10 @@ test:
 	go test -v ./...
 
 proto:
-	./build_protobuf.sh
+	./etc/build_protobuf.sh
 
 run_minio:
-	./run_minio.sh
+	./etc/run_minio.sh
 
-
+targets/create-test-ref: etc/create-test-ref/*
+	go build -o ./targets/create-test-ref ./etc/create-test-ref
