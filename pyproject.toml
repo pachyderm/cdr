@@ -8,6 +8,7 @@ include = ["cdr.py", "cdr_pb2.py"]
 [tool.poetry.dependencies]
 python = "^3.7"
 google = "^3.0.0"
+protobuf = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 
