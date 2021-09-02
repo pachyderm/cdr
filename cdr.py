@@ -1,6 +1,7 @@
 from typing import Iterator
 from cdr_pb2 import Ref
 
+
 class Resolver:
 
     def deref(self, ref: Ref) -> Iterator:
