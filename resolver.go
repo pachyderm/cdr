@@ -14,14 +14,26 @@ import (
 	"golang.org/x/crypto/chacha20"
 )
 
+type Option func(r *Resolver)
+
+func WithHTTPClient(c *http.Client) Option {
+	return func(r *Resolver) {
+		r.httpClient = c
+	}
+}
+
 type Resolver struct {
 	httpClient *http.Client
 }
 
-func NewResolver() *Resolver {
-	return &Resolver{
+func NewResolver(opts ...Option) *Resolver {
+	r := &Resolver{
 		httpClient: http.DefaultClient,
 	}
+	for _, opt := range opts {
+		opt(r)
+	}
+	return r
 }
 
 func (r *Resolver) Deref(ctx context.Context, ref *Ref) (io.ReadCloser, error) {

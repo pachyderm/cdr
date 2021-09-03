@@ -1,17 +1,16 @@
 package cdr
 
 import (
+	"bytes"
 	"context"
 	"encoding/hex"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"testing"
 	"time"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/crypto/blake2b"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -27,19 +26,18 @@ func TestCreateResolve(t *testing.T) {
 	client := NewTestMinioClient(t)
 	bucketName := NewTestMinioBucket(t, client)
 
-	secret := blake2b.Sum256([]byte("not a very good key stretched in not a very good way"))
 	creator := NewCreator([]Middleware{
 		CompressGzip,
-		EncryptChaCha20(secret[:]),
+		EncryptChaCha20,
 		HashBlake2b256,
-	},
-		func(ctx context.Context, r io.Reader) (*Ref, error) {
-			key := "test-object-key"
-			if _, err := client.PutObject(ctx, bucketName, key, r, -1, minio.PutObjectOptions{}); err != nil {
-				return nil, err
-			}
-			return CreateMinioRef(ctx, client, bucketName, key, time.Hour)
-		})
+	}, func(ctx context.Context, data []byte) (*Ref, error) {
+		key := "test-object-key"
+		r := bytes.NewReader(data)
+		if _, err := client.PutObject(ctx, bucketName, key, r, int64(len(data)), minio.PutObjectOptions{}); err != nil {
+			return nil, err
+		}
+		return CreateMinioRef(ctx, client, bucketName, key, time.Hour)
+	})
 	resolver := NewTestResolver(t)
 
 	testData := []byte("test data goes here")
