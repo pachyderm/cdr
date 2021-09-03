@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from os import urandom
 from typing import Callable, Dict, Optional, Type
 
 from Crypto.Cipher import ChaCha20 as ChaCha20Cipher
@@ -15,6 +16,7 @@ class CipherMiddleware(ABC):
     def __init__(self, key: bytes, nonce: bytes):
         self.key = key
         self.nonce = nonce
+        self._nonce_used = False
 
     _subclasses_registry: Dict["CipherAlgo", Type["CipherMiddleware"]] = dict()
 
@@ -31,8 +33,15 @@ class CipherMiddleware(ABC):
             raise ValueError(f"ContentHashMiddleware already exists for for algorithm: {algorithm}")
         cls._subclasses_registry[algorithm] = cls
 
-    @abstractmethod
     def encrypt(self, data: bytes) -> bytes:
+        """ Encrypt the input data. """
+        if self._nonce_used:
+            self.new_nonce()
+        self._nonce_used = True
+        return self._encrypt(data)
+
+    @abstractmethod
+    def _encrypt(self, data: bytes) -> bytes:
         """ Encrypt the input data. """
         ...
 
@@ -41,12 +50,17 @@ class CipherMiddleware(ABC):
         """ Decrypt the input data. """
         ...
 
+    def new_nonce(self) -> None:
+        """ Create a new nonce. """
+        self.nonce = urandom(len(self.nonce))
+        self._nonce_used = False
+
     def ref_maker(self) -> Callable[[Ref], Ref]:
         """ Creates a function that will create a Ref object. """
 
         def inner(inner_ref: Ref):
             return Ref(
-                cipher=CipherRef(
+                cipher=Cipher(
                     inner=inner_ref,
                     algo=self.algorithm,
                     key=self.key,
@@ -65,7 +79,7 @@ class CipherMiddleware(ABC):
 class ChaCha20(CipherMiddleware):
     algorithm = CipherAlgo.CHACHA20
 
-    def encrypt(self, data: bytes) -> bytes:
+    def _encrypt(self, data: bytes) -> bytes:
         """ Encrypt the input data. """
         cipher = ChaCha20Cipher.new(key=self.key, nonce=self.nonce)
         return cipher.encrypt(data)

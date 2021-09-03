@@ -1,13 +1,14 @@
-import os
 from datetime import timedelta
+from os import urandom
+from typing import Optional
 
 import pytest
 from minio import Minio
 from minio.credentials import StaticProvider
 
-from .cipher import ChaCha20
-from .compress import GZip
-from .content_hash import HashBlake2b256
+from .cipher import CipherMiddleware, ChaCha20
+from .compress import CompressionMiddleware, GZip
+from .content_hash import ContentHashMiddleware, HashBlake2b256
 from .creator import create_ref
 from .http import MinioMiddleware
 from .resolver import Resolver
@@ -15,12 +16,7 @@ from .resolver import Resolver
 
 @pytest.fixture(name="bucket_name")
 def _bucket_name(request: pytest.FixtureRequest) -> str:
-    return (
-        request.node.name
-        .replace("_", "-")
-        .replace("[", ".")
-        .replace("]", ".")
-    )
+    return request.node.originalname.replace("_", "-")
 
 
 @pytest.fixture(name="client")
@@ -45,15 +41,46 @@ def _minio_client(bucket_name: str) -> Minio:
         safe_delete_bucket(client)
 
 
-def test_resolver(client: Minio, bucket_name: str) -> None:
+##### Middleware Parametrizers ############################
+
+@pytest.fixture(name="cipher", params=[None, ChaCha20(key=urandom(32), nonce=urandom(24))])
+def _cipher(request) -> Optional[CipherMiddleware]:
+    return request.param
+
+
+@pytest.fixture(name="compression", params=[None, GZip()])
+def _compression(request) -> Optional[CompressionMiddleware]:
+    return request.param
+
+
+@pytest.fixture(name="content_hash", params=[None, HashBlake2b256()])
+def _content_hash(request) -> Optional[ContentHashMiddleware]:
+    return request.param
+
+
+@pytest.mark.parametrize("chunk_size", [None, 5, 100])
+def test_resolver(
+    client: Minio,
+    bucket_name: str,
+    cipher: Optional[CipherMiddleware],
+    compression: Optional[CompressionMiddleware],
+    content_hash: Optional[ContentHashMiddleware],
+    chunk_size: Optional[int]
+) -> None:
     # Arrange
-    original = b"testing..."
+    original = b"testing..." * 3
     ref = create_ref(
         data=original,
-        destination=MinioMiddleware(client, bucket_name, "test-key", timedelta(minutes=5)),
-        cipher=ChaCha20(key=os.urandom(32), nonce=os.urandom(16)),
-        compression=GZip(),
-        content_hash=HashBlake2b256()
+        destination=MinioMiddleware(
+            client=client,
+            bucket=bucket_name,
+            key="test-key",
+            expires=timedelta(minutes=5)
+        ),
+        cipher=cipher,
+        compression=compression,
+        content_hash=content_hash,
+        chunk_size=chunk_size
     )
     resolver = Resolver()
 

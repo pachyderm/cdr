@@ -1,21 +1,31 @@
-from typing import List, Optional, Type, TypeVar, Union
+from typing import List, Optional, Type, TypeVar
 
-from cdr_pb2 import Ref, Cipher, Concat, ContentHash, HTTP, SizeLimits, Slice
+from cdr_pb2 import Ref, Cipher, Compress, Concat, ContentHash, HTTP, SizeLimits, Slice
 from . import COMMON_DATA_REF
 
 B = TypeVar("B", bound=COMMON_DATA_REF)
 
 
 def is_immutable(ref: Ref) -> bool:
-    raise NotImplementedError
+    """ Determine whether a reference is immutable (data has corresponding hash). """
+    body = _get_ref_body(ref)
+    if isinstance(body, ContentHash) or body is None:
+        return True
+    if isinstance(body, Concat):
+        return all(map(is_immutable, body.refs))
+    if isinstance(body, (Cipher, Compress, SizeLimits, Slice)):
+        return is_immutable(body.inner)
+    return False
 
 
 def min_size(ref: Ref) -> Optional[int]:
+    """ Determine the minimum size of the data specified by the CDR. """
     size_limit_refs = _collect_all_size_limit_refs(ref)
     return sum(getattr(r, "min", 0) for r in size_limit_refs) or None
 
 
 def max_size(ref: Ref) -> Optional[int]:
+    """ Determine the maximum size of the data specified by the CDR. """
     size_limit_refs = _collect_all_size_limit_refs(ref)
     return sum(getattr(r, "max", 0) for r in size_limit_refs) or None
 

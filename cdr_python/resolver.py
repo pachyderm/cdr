@@ -1,6 +1,6 @@
 import requests
 
-from cdr_pb2 import Ref, Cipher, Compress, Concat, ContentHash, HTTP, SizeLimits, Slice
+from cdr_pb2 import Ref, Cipher, Compress, Concat, ContentHash, HTTP, SizeLimits
 from .cipher import CipherMiddleware
 from .compress import CompressionMiddleware
 from .content_hash import ContentHashMiddleware
@@ -8,6 +8,7 @@ from .utils import _get_ref_body
 
 
 class Resolver:
+    """ Object that can resolve/dereference/retrieve the data of a CDR. """
 
     def dereference(self, ref: Ref) -> bytes:
         """ NOTE: I would implement this as a context manager, but this is a simple stand in. """
@@ -16,10 +17,14 @@ class Resolver:
             return self._dereference_http(body)
         elif isinstance(body, Cipher):
             return self._dereference_cipher(body)
-        elif isinstance(body, ContentHash):
-            return self._dereference_content_hash(body)
         elif isinstance(body, Compress):
             return self._dereference_compress(body)
+        elif isinstance(body, ContentHash):
+            return self._dereference_content_hash(body)
+        elif isinstance(body, SizeLimits):
+            return self._dereference_size_limits(body)
+        elif isinstance(body, Concat):
+            return self._dereference_concat(body)
         else:
             raise ValueError(f"unsupported Ref variant: {body}")
 
@@ -55,6 +60,25 @@ class Resolver:
             raise ValueError(
                 f"content failed hash check. "
                 f"HAVE: {middleware.hash(inner_data)} "
-                f"GOT: {body.hash}"
+                f"WANT: {body.hash}"
             )
         return inner_data
+
+    def _dereference_size_limits(self, body: SizeLimits) -> bytes:
+        inner_data = self.dereference(body.inner)
+        if body.min and len(inner_data) < body.min:
+            raise ValueError(
+                f"content failed minimum size check. "
+                f"HAVE: {len(inner_data)} bytes "
+                f"WANT: {body.min} bytes "
+            )
+        if body.max and len(inner_data) > body.max:
+            raise ValueError(
+                f"content failed minimum size check. "
+                f"HAVE: {len(inner_data)} bytes "
+                f"WANT: {body.max} bytes "
+            )
+        return inner_data
+
+    def _dereference_concat(self, body: Concat) -> bytes:
+        return b''.join(map(self.dereference, body.refs))
