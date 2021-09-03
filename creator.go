@@ -5,17 +5,14 @@ import (
 	"compress/gzip"
 	"context"
 	"crypto/rand"
-	"io"
 
 	"golang.org/x/crypto/blake2b"
 	"golang.org/x/crypto/chacha20"
 )
 
-type PostFunc = func(ctx context.Context, r io.Reader) (*Ref, error)
+type PostFunc = func(ctx context.Context, data []byte) (*Ref, error)
 
-type RefMapper = func(*Ref) *Ref
-
-type Middleware = func(out, data []byte) ([]byte, RefMapper)
+type Middleware = func(ctx context.Context, in []byte, next PostFunc) (*Ref, error)
 
 type Creator struct {
 	layers   []Middleware
@@ -30,85 +27,78 @@ func NewCreator(layers []Middleware, postFunc PostFunc) *Creator {
 }
 
 func (c *Creator) MakeRef(ctx context.Context, data []byte) (*Ref, error) {
-	in := data
-	var out []byte
-	refMaps := make([]RefMapper, len(c.layers))
-	for i, layer := range c.layers {
-		out, refMaps[i] = layer(out, in)
-		in = out
-		out = out[:0]
+	var getPostFunc func(i int) PostFunc
+	getPostFunc = func(i int) PostFunc {
+		if i >= len(c.layers) {
+			return c.postFunc
+		}
+		return func(ctx context.Context, in []byte) (*Ref, error) {
+			return c.layers[i](ctx, in, getPostFunc(i+1))
+		}
 	}
-	ref, err := c.postFunc(ctx, bytes.NewReader(in))
+	return getPostFunc(0)(ctx, data)
+}
+
+func CompressGzip(ctx context.Context, in []byte, next PostFunc) (*Ref, error) {
+	buf := bytes.NewBuffer(nil)
+	gw := gzip.NewWriter(buf)
+	if _, err := gw.Write(in); err != nil {
+		return nil, err
+	}
+	if err := gw.Close(); err != nil {
+		return nil, err
+	}
+	ref, err := next(ctx, buf.Bytes())
 	if err != nil {
 		return nil, err
 	}
-	for i := len(refMaps) - 1; i >= 0; i-- {
-		ref = refMaps[i](ref)
-	}
-	return ref, nil
+	return &Ref{
+		Body: &Ref_Compress{Compress: &Compress{
+			Inner: ref,
+			Algo:  CompressAlgo_GZIP,
+		}},
+	}, nil
 }
 
-func HashBlake2b256(out, in []byte) ([]byte, RefMapper) {
-	h, err := blake2b.New256(nil)
+func HashBlake2b256(ctx context.Context, in []byte, next PostFunc) (*Ref, error) {
+	sum := blake2b.Sum256(in)
+	ref, err := next(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return &Ref{
+		Body: &Ref_ContentHash{ContentHash: &ContentHash{
+			Inner: ref,
+			Algo:  HashAlgo_BLAKE2b_256,
+			Hash:  sum[:],
+		}},
+	}, nil
+}
+
+// EncryptChaCha20 encrypts the data with a random key (stored in the ref)
+// Does not protect the data from tampering.
+func EncryptChaCha20(ctx context.Context, data []byte, next PostFunc) (*Ref, error) {
+	nonce := make([]byte, chacha20.NonceSize)
+	key := make([]byte, 32)
+	if _, err := rand.Read(key[:]); err != nil {
+		return nil, err
+	}
+	cipher, err := chacha20.NewUnauthenticatedCipher(key, nonce)
 	if err != nil {
 		panic(err)
 	}
-	h.Write(in)
-	out = append(out, in...)
-	fn := func(x *Ref) *Ref {
-		return &Ref{
-			Body: &Ref_ContentHash{ContentHash: &ContentHash{
-				Inner: x,
-				Algo:  HashAlgo_BLAKE2b_256,
-				Hash:  h.Sum(nil),
-			}},
-		}
+	ctext := make([]byte, len(data))
+	cipher.XORKeyStream(ctext, data)
+	ref, err := next(ctx, ctext)
+	if err != nil {
+		return nil, err
 	}
-	return out, fn
-}
-
-func CompressGzip(out, in []byte) ([]byte, RefMapper) {
-	buf := bytes.NewBuffer(out)
-	gw := gzip.NewWriter(buf)
-	if _, err := gw.Write(in); err != nil {
-		panic(err)
-	}
-	if err := gw.Close(); err != nil {
-		panic(err)
-	}
-	fn := func(x *Ref) *Ref {
-		return &Ref{
-			Body: &Ref_Compress{Compress: &Compress{
-				Inner: x,
-				Algo:  CompressAlgo_GZIP,
-			}},
-		}
-	}
-	return buf.Bytes(), fn
-}
-
-func EncryptChaCha20(key []byte) func(out, in []byte) ([]byte, RefMapper) {
-	return func(out, in []byte) ([]byte, RefMapper) {
-		nonce := make([]byte, chacha20.NonceSizeX)
-		if _, err := rand.Read(nonce); err != nil {
-			panic(err)
-		}
-		cipher, err := chacha20.NewUnauthenticatedCipher(key, nonce)
-		if err != nil {
-			panic(err)
-		}
-		out = append(out, in...)
-		cipher.XORKeyStream(out[len(out)-len(in):], in)
-		fn := func(x *Ref) *Ref {
-			return &Ref{
-				Body: &Ref_Cipher{Cipher: &Cipher{
-					Inner: x,
-					Algo:  CipherAlgo_CHACHA20,
-					Key:   key,
-					Nonce: nonce,
-				}},
-			}
-		}
-		return out, fn
-	}
+	return &Ref{
+		Body: &Ref_Cipher{Cipher: &Cipher{
+			Inner: ref,
+			Algo:  CipherAlgo_CHACHA20,
+			Key:   key,
+			Nonce: nonce,
+		}},
+	}, nil
 }

@@ -2,7 +2,28 @@
 package cdr
 
 func IsImmutable(ref *Ref) bool {
-	panic("not implemented")
+	switch x := ref.Body.(type) {
+	case *Ref_ContentHash:
+		return true
+	case nil:
+		return true
+	case *Ref_Concat:
+		var ret bool
+		for _, ref := range x.Concat.Refs {
+			ret = ret && IsImmutable(ref)
+		}
+		return ret
+	case *Ref_Cipher:
+		return IsImmutable(x.Cipher.Inner)
+	case *Ref_Compress:
+		return IsImmutable(x.Compress.Inner)
+	case *Ref_SizeLimits:
+		return IsImmutable(x.SizeLimits.Inner)
+	case *Ref_Slice:
+		return IsImmutable(x.Slice.Inner)
+	default:
+		return false
+	}
 }
 
 func MinSize(ref *Ref) int64 {

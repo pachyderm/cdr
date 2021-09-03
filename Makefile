@@ -7,7 +7,7 @@ test:
 proto:
 	./etc/build_protobuf.sh
 
-run_minio:
+run-minio:
 	./etc/run_minio.sh
 
 targets/create-test-ref: etc/create-test-ref/*
