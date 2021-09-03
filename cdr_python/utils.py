@@ -1,14 +1,9 @@
-from typing import Iterator, List, Optional, Type, TypeVar
+from typing import List, Optional, Type, TypeVar, Union
+
 from cdr_pb2 import Ref, Cipher, Concat, ContentHash, HTTP, SizeLimits, Slice
+from . import COMMON_DATA_REF
 
-M = TypeVar("M")
-
-
-class Resolver:
-
-    def deref(self, ref: Ref) -> Iterator:
-        """ NOTE: I would implement this as a context manager, but this is a simple stand in. """
-        raise NotImplementedError
+B = TypeVar("B", bound=COMMON_DATA_REF)
 
 
 def is_immutable(ref: Ref) -> bool:
@@ -17,12 +12,12 @@ def is_immutable(ref: Ref) -> bool:
 
 def min_size(ref: Ref) -> Optional[int]:
     size_limit_refs = _collect_all_size_limit_refs(ref)
-    return sum(getattr(size_limit_ref, "min", 0) for size_limit_ref in size_limit_refs)
+    return sum(getattr(r, "min", 0) for r in size_limit_refs) or None
 
 
 def max_size(ref: Ref) -> Optional[int]:
     size_limit_refs = _collect_all_size_limit_refs(ref)
-    return sum(getattr(size_limit_ref, "max", 0) for size_limit_ref in size_limit_refs)
+    return sum(getattr(r, "max", 0) for r in size_limit_refs) or None
 
 
 def _collect_all_size_limit_refs(ref: Ref) -> List[Optional[SizeLimits]]:
@@ -40,19 +35,23 @@ def _collect_all_size_limit_refs(ref: Ref) -> List[Optional[SizeLimits]]:
     return size_limit_refs
 
 
-def _find_first_ref(ref: Ref, message_type: Type[M]) -> Optional[M]:
+def _find_first_ref(ref: Ref, message_type: Type[B]) -> Optional[B]:
     """ Finds and returns (if exists) the first instance of the specified message type
     within the specified Ref.
     """
     # Get the body message, if it exists
+    body = _get_ref_body(ref)
+    if isinstance(body, message_type):
+        return body
+    if not body or isinstance(body, (Concat, HTTP)):
+        # If the body message is a Concat or HTTP message stop recursion.
+        return None
+    return _find_first_ref(body.inner, message_type)
+
+
+def _get_ref_body(ref: Ref) -> Optional[COMMON_DATA_REF]:
     field = ref.WhichOneof("body")
     if field is None:
         return None
     body = getattr(ref, field)
-
-    if isinstance(body, message_type):
-        return ref
-    if isinstance(body, (Concat, HTTP)):
-        # If the body message is a Concat or HTTP message stop recursion.
-        return None
-    return _find_first_ref(body.inner, message_type)
+    return body
