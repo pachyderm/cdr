@@ -3,20 +3,20 @@ from typing import Callable, Dict, Optional, Type
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 
-from cdr_pb2 import Ref, Cipher as CipherRef, EncAlgo
+from cdr_pb2 import Ref, Cipher as CipherRef, CipherAlgo
 
 
 class CipherMiddleware(ABC):
     """ Abstract base class for cipher middleware. """
 
     # The algorithm corresponding to the middleware. Must be defined.
-    algorithm: EncAlgo = NotImplemented
+    algorithm: CipherAlgo = NotImplemented
 
     def __init__(self, key: bytes, nonce: bytes):
         self.key = key
         self.nonce = nonce
 
-    _subclasses_registry: Dict["EncAlgo", Type["CipherMiddleware"]] = dict()
+    _subclasses_registry: Dict["CipherAlgo", Type["CipherMiddleware"]] = dict()
 
     def __init_subclass__(cls) -> None:
         """ This method is called when subclasses of this object are instantiated.
@@ -57,13 +57,13 @@ class CipherMiddleware(ABC):
         return inner
 
     @classmethod
-    def select(cls, algorithm: EncAlgo) -> Optional[Type["CipherMiddleware"]]:
+    def select(cls, algorithm: CipherAlgo) -> Optional[Type["CipherMiddleware"]]:
         """ Given a hashing algorithm, return the corresponding middleware class. """
         return cls._subclasses_registry.get(algorithm, None)
 
 
 class ChaCha20(CipherMiddleware):
-    algorithm = EncAlgo.CHACHA20
+    algorithm = CipherAlgo.CHACHA20
 
     def encrypt(self, data: bytes) -> bytes:
         """ Encrypt the input data. """
