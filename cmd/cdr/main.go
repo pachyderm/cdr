@@ -28,7 +28,7 @@ var rootCmd = &cobra.Command{
 
 var derefCmd = &cobra.Command{
 	Use:   "deref",
-	Short: "dereferences a CDR and writes it's content to standard output",
+	Short: "dereferences a CDR and writes the content to standard output",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		r := cdr.NewResolver()
