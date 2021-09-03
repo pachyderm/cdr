@@ -1,5 +1,3 @@
-from typing import Union
+from .resolver import Resolver
 
-import cdr_pb2 as pb
-
-COMMON_DATA_REF = Union[pb.Cipher, pb.Concat, pb.ContentHash, pb.HTTP, pb.SizeLimits, pb.Slice]
+__all__ = ["Resolver", ]
