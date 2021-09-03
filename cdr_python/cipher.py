@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Dict, Optional, Type
 
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
+from Crypto.Cipher import ChaCha20 as ChaCha20Cipher
 
-from cdr_pb2 import Ref, Cipher as CipherRef, CipherAlgo
+from cdr_pb2 import Ref, Cipher, CipherAlgo
 
 
 class CipherMiddleware(ABC):
@@ -67,10 +67,10 @@ class ChaCha20(CipherMiddleware):
 
     def encrypt(self, data: bytes) -> bytes:
         """ Encrypt the input data. """
-        cipher = Cipher(algorithms.ChaCha20(self.key, self.nonce), mode=None)
-        return cipher.encryptor().update(data)
+        cipher = ChaCha20Cipher.new(key=self.key, nonce=self.nonce)
+        return cipher.encrypt(data)
 
     def decrypt(self, data: bytes) -> bytes:
         """ Decrypt the input data. """
-        cipher = Cipher(algorithms.ChaCha20(self.key, self.nonce), mode=None)
-        return cipher.decryptor().update(data)
+        cipher = ChaCha20Cipher.new(key=self.key, nonce=self.nonce)
+        return cipher.decrypt(data)

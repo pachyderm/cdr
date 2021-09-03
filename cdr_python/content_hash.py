@@ -69,4 +69,4 @@ class HashBlake2b256(ContentHashMiddleware):
         """ Performs the hashing on input data. """
 
         hasher = blake2b(data, digest_size=32)
-        return hasher.hexdigest().encode('utf-8')
+        return hasher.digest()
