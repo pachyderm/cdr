@@ -1,6 +1,12 @@
 // package cdr provides Common Data Refs
 package cdr
 
+import (
+	"encoding/base64"
+
+	"google.golang.org/protobuf/proto"
+)
+
 func IsImmutable(ref *Ref) bool {
 	switch x := ref.Body.(type) {
 	case *Ref_ContentHash:
@@ -47,4 +53,23 @@ func CreateSliceRef(x *Ref, start, end uint64) *Ref {
 	return &Ref{
 		Body: &Ref_Slice{Slice: &Slice{Inner: x, Start: start, End: end}},
 	}
+}
+
+func (r *Ref) MarshalBase64() []byte {
+	data, err := proto.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+	return []byte(base64.URLEncoding.EncodeToString(data))
+}
+
+func (r *Ref) UnmarshalBase64(x []byte) error {
+	enc := base64.URLEncoding
+	decoded := make([]byte, enc.DecodedLen(len(x)))
+	n, err := enc.Decode(decoded, x)
+	if err != nil {
+		return err
+	}
+	data := decoded[:n]
+	return proto.Unmarshal(data, r)
 }
