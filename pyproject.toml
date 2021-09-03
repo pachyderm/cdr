@@ -3,13 +3,17 @@ name = "cdr"
 version = "0.1.0"
 description = ""
 authors = []
-include = ["cdr.py", "cdr_pb2.py"]
+include = ["cdr_python", "cdr_pb2.py"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-google = "^3.0.0"
+protobuf = "^3.0.0"
+pycryptodome = "^3.0.0"
+requests = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
+minio = "^7.1.0"
+pytest = "^6.2.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
