@@ -1,5 +1,10 @@
 # Common Data Refs
 
+## CLI
+There is a command line tool `cdr` which can be built with `make targets/cdr`.
+It allows users to inpsect and dereference CDRs.
+Run it with no arguments to see the help message.
+
 ## Contributing
 To run the tests use `make run_minio` to run a minio container.
 Then run the tests with `make test`
