@@ -1,7 +1,7 @@
 from typing import List, Optional, Type, TypeVar
 
 from cdr_pb2 import Ref, Cipher, Compress, Concat, ContentHash, HTTP, SizeLimits, Slice
-from . import COMMON_DATA_REF
+from .types import COMMON_DATA_REF
 
 B = TypeVar("B", bound=COMMON_DATA_REF)
 
