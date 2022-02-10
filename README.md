@@ -1,5 +1,9 @@
 # Common Data Refs
 
+**NOTE:** This is not an officially supported Pachyderm product.
+
+Common Data Refs are a standard intermediary format for passing references to data between systems.
+
 ## CLI
 There is a command line tool `cdr` which can be built with `make targets/cdr`.
 It allows users to inpsect and dereference CDRs.
