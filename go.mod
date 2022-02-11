@@ -8,6 +8,7 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/hashicorp/golang-lru v0.5.1
 	github.com/minio/minio-go/v7 v7.0.13
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
